@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="eng">
+<html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,8 +39,34 @@
     margin: 0;
     padding: 2rem 1rem 4rem;
   }
-  .wrap { max-width: 560px; margin: 0 auto; }
-  h1 { font-size: 20px; font-weight: 600; margin: 0 0 1.5rem; }
+  
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  
+  .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0; }
+  
+  #langSelect {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* Layout System */
+  .layout { display: flex; gap: 2rem; align-items: flex-start; }
+  .left-col { flex: 1; min-width: 250px; position: sticky; top: 2rem; }
+  .mid-col { flex: 2; min-width: 320px; }
+  .right-col { flex: 1.2; min-width: 280px; position: sticky; top: 2rem; }
+
+  @media (max-width: 992px) {
+    .layout { flex-direction: column; }
+    .left-col, .mid-col, .right-col { width: 100%; position: static; }
+  }
+
   .card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -49,6 +75,30 @@
     margin-bottom: 0.75rem;
   }
   .card h2 { font-size: 15px; font-weight: 600; margin: 0 0 0.75rem; text-transform: lowercase; }
+  
+  .example-item {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .example-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .example-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: var(--text);
+  }
+  .example-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+  }
+  
   input[type="text"] {
     width: 100%;
     padding: 10px 12px;
@@ -63,6 +113,7 @@
   .row label { font-size: 13px; color: var(--text-secondary); width: 130px; flex-shrink: 0; }
   .row input[type="range"] { flex: 1; accent-color: var(--accent); }
   .row .out { font-size: 13px; font-weight: 600; min-width: 26px; text-align: right; }
+  
   .result {
     display: flex; align-items: center; justify-content: space-between;
     background: var(--card); border: 1px solid var(--border); border-radius: 12px;
@@ -70,12 +121,14 @@
   }
   .result .num { font-size: 26px; font-weight: 600; margin: 4px 0 0; }
   .result .label { font-size: 12px; color: var(--text-secondary); }
+  
   .stars { display: flex; gap: 2px; }
   .star { position: relative; width: 20px; height: 20px; }
   .star svg { position: absolute; inset: 0; width: 20px; height: 20px; }
   .star .empty path { fill: var(--star-empty); }
   .star .fill path { fill: var(--accent); }
   .star .fillwrap { position: absolute; inset: 0; overflow: hidden; }
+  
   button {
     border: 1px solid var(--border);
     background: var(--card);
@@ -84,9 +137,11 @@
     padding: 10px 14px;
     font-size: 14px;
     cursor: pointer;
+    font-weight: 600;
   }
   button:hover { background: var(--accent-bg); }
-  #saveBtn { width: 100%; font-weight: 600; margin-bottom: 1.5rem; }
+  #saveBtn { width: 100%; margin-bottom: 1.5rem; }
+  
   .savedRow {
     display: flex; align-items: center; justify-content: space-between;
     border-bottom: 1px solid var(--border); padding: 10px 0;
@@ -95,87 +150,334 @@
   .savedRow .title { font-size: 14px; font-weight: 600; margin: 0; }
   .savedRow .meta { font-size: 12px; color: var(--text-muted); margin: 2px 0 0; }
   .savedRow .score { font-size: 16px; font-weight: 600; }
-  .delBtn { padding: 6px 8px; color: var(--danger); border: none; background: none; font-size: 13px; }
+  .delBtn { padding: 6px 8px; color: var(--danger); border: none; background: none; font-size: 13px; font-weight: 400; }
+  
   .toolbar { display: flex; justify-content: space-between; align-items: center; margin: 1.5rem 0 0.5rem; }
   .toolbar h2 { font-size: 15px; font-weight: 600; margin: 0; text-transform: lowercase; }
-  .toolbar button { font-size: 12px; padding: 6px 10px; }
+  .toolbar button { font-size: 12px; padding: 6px 10px; font-weight: normal; }
   .empty-state { font-size: 13px; color: var(--text-muted); padding: 8px 0; }
+  .footer-note {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Film Ranker</h1>
-
-  <input type="text" id="filmTitle" placeholder="Film Title">
-
-  <div class="card">
-    <h2>Artisanship</h2>
-    <div id="zanaatSliders"></div>
+  
+  <!-- 1. BAŞLIK KISMI (Burada başlar ve biter) -->
+  <div class="header-row">
+    <h1 id="appTitle">Film Ranker</h1>
+    <select id="langSelect">
+      <option value="tr">Türkçe</option>
+      <option value="en">English</option>
+    </select>
   </div>
 
-  <div class="card">
-    <h2>Depth</h2>
-    <div id="derinlikSliders"></div>
+  <!-- 2. UYARI KUTUSU (Başlığın hemen altında, tek başına durur) -->
+  <div class="card" id="warningBox" style="margin-bottom: 1.5rem; font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+    Hazırlanan bu araç tamamen subjektiftir. Buradaki maddeler ve örnekler katı kurallar değil, kişisel değerlendirmeleri yönlendiren öneriler ve tanımlardır.
   </div>
 
-  <div class="card">
-    <h2>Personal Impact</h2>
-    <div id="kisiselSliders"></div>
-  </div>
-
-  <div class="result">
-    <div>
-      <p class="label">result</p>
-      <p class="num" id="resultVal">3.0</p>
+  <div class="layout">
+    
+    <!-- 1. SOL SÜTUN: Örnek Referanslar -->
+    <div class="left-col">
+      <div class="card">
+        <h2 id="titleReferences">Referanslar</h2>
+        
+        <div class="example-item">
+          <p class="example-title" id="ex1Title"></p>
+          <p class="example-desc" id="ex1Desc"></p>
+        </div>
+      </div>
     </div>
-    <div class="stars" id="starRow"></div>
-  </div>
 
-  <button id="saveBtn">+ add to list</button>
+    <!-- 2. ORTA SÜTUN: Ranker ve Kaydedilenler -->
+    <div class="mid-col">
+      <input type="text" id="filmTitle" placeholder="Film Title">
 
-  <div class="toolbar">
-    <h2>saved films</h2>
-    <button id="exportBtn">download CSV</button>
+      <div class="card">
+        <h2 id="titleZanaat">Artisanship</h2>
+        <div id="zanaatSliders"></div>
+      </div>
+
+      <div class="card">
+        <h2 id="titleDerinlik">Depth</h2>
+        <div id="derinlikSliders"></div>
+      </div>
+
+      <div class="card">
+        <h2 id="titleKisisel">Personal Impact</h2>
+        <div id="kisiselSliders"></div>
+      </div>
+
+      <div class="result">
+        <div>
+          <p class="label" id="labelResult">result</p>
+          <p class="num" id="resultVal">3.0</p>
+        </div>
+        <div class="stars" id="starRow"></div>
+      </div>
+
+      <button id="saveBtn">+ add to list</button>
+
+      <div class="toolbar">
+        <h2 id="titleSaved">saved films</h2>
+        <button id="exportBtn">download CSV</button>
+      </div>
+      <div id="savedList"></div>
+    </div>
+
+    <!-- 3. SAĞ SÜTUN: Wiki -->
+    <div class="right-col">
+      <div class="card" style="min-height: 300px; max-height: 85vh; overflow-y: auto;">
+        <h2 id="titleWiki">Bilgilendirme</h2>
+        <div id="wikiContent">
+          
+          <div class="example-item">
+            <p class="example-title" id="wiki1Title"></p>
+            <p class="example-desc" id="wiki1Desc"></p>
+          </div>
+          <div class="example-item">
+            <p class="example-title" id="wiki2Title"></p>
+            <p class="example-desc" id="wiki2Desc"></p>
+          </div>
+          <div class="example-item">
+            <p class="example-title" id="wiki3Title"></p>
+            <p class="example-desc" id="wiki3Desc"></p>
+          </div>
+          <div class="example-item">
+            <p class="example-title" id="wiki4Title"></p>
+            <p class="example-desc" id="wiki4Desc"></p>
+          </div>
+          <div class="example-item">
+            <p class="example-title" id="wiki5Title"></p>
+            <p class="example-desc" id="wiki5Desc"></p>
+          </div>
+          <div class="example-item">
+            <p class="example-title" id="wiki6Title"></p>
+            <p class="example-desc" id="wiki6Desc"></p>
+          </div>
+          <div class="example-item">
+            <p class="example-title" id="wiki7Title"></p>
+            <p class="example-desc" id="wiki7Desc"></p>
+          </div>
+          <div class="example-item">
+            <p class="example-title" id="wiki8Title"></p>
+            <p class="example-desc" id="wiki8Desc"></p>
+          </div>
+          <div class="example-item">
+            <p class="example-title" id="wiki9Title"></p>
+            <p class="example-desc" id="wiki9Desc"></p>
+          </div>
+
+        </div>
+      </div>
+   <div class="footer-note">
+    Gün Alperen Saka &middot; Made with AI
+   </div>
+    
   </div>
-  <div id="savedList"></div>
 </div>
 
 <script>
 const STORAGE_KEY = 'gunFilmRatings';
+let currentLang = 'tr'; 
+
+const DICT = {
+  tr: {
+    appTitle: "Film Puanlayıcı",
+    placeholder: "Film Adı...",
+    titleZanaat: "Zanaat",
+    titleDerinlik: "Derinlik",
+    titleKisisel: "Kişisel Etki",
+    labelResult: "sonuç",
+    saveBtn: "+ listeye ekle",
+    titleSaved: "kaydedilen filmler",
+    exportBtn: "CSV indir",
+    emptyState: "Henüz film kaydedilmedi.",
+    warningText: "Hazırlanan bu araç tamamen subjektiftir. Buradaki maddeler ve örnekler katı kurallar değil, kişisel değerlendirmeleri yönlendiren öneriler ve tanımlardır.",
+    delBtn: "Sil",
+    
+    titleReferences: "Referanslar",
+    ex1Title: "Ran (乱) - Akira Kurosawa (1985)",
+    ex1Desc: "Mevzubahis kriteri puanlamak adına kullanılabilecek muazzam bir sinematografi örneği.",
+    
+    titleWiki: "Bilgilendirme",
+    wiki1Title: "Sinematografi",
+    wiki1Desc: "Bir film için görüntü kaydederken ışıklandırma, kamera açıları ve kompozisyon tercihleri yapma sanatıdır. Genel olarak, bir hikayeyi görsel olarak anlatma disiplinidir. Kamera açıları, ekranda görünen kişi objelerin yerleşimi gibi, ekranda gördüğüm çoğu şeyin ekrana nasıl yerleştirildiği ve bize nasıl aktarıldığı ile ilgilenir.",
+    wiki2Title: "Senaryo",
+    wiki2Desc: "Filmin sahne akışını, diyaloglarını ve olaylarını gösteren yazılı metindir. Ancak burada kullanılan anlamıyla senaryo, izlediğimiz filmin olay örgüsünün ve diyaloglarının bize nasıl aktarıldığıyla ilgilenir. Bu, filmin görüntü ve sesinden bağımsız olarak bize aktarılan sözel ve/veya soyut ögeleri kapsar.",
+    wiki3Title: "Oyunculuk",
+    wiki3Desc: "Filmde rol alan aktörlerin sergilediği performanstır. İzleyiciye duyguyu yansıtıp yansıtamadıklarıyla ilgilenir.",
+    wiki4Title: "Teknik İşçilik",
+    wiki4Desc: "Filmde kullanılan ekipmanların, pratik ve görsel efektlerin ne kadar iyi yaratıldığı ve kullanıldığıyla ilgilidir.",
+    wiki5Title: "Akıcılık",
+    wiki5Desc: "Filmin kendini ne ölçüde izlettirdiğiyle ilgilenir. Akıcı bir film izlerken zamanın nasıl geçtiğini anlamazsınız veya ekran başından kalkamazsınız.",
+    wiki6Title: "Ses ve Müzik",
+    wiki6Desc: "Filmin ses ve müzik tasarımıdır. Filmde çalan müzikler duyguyu pekiştiriyor mu, yoksa fazlalık gibi mi hissettiriyor? Ses tasarımları gerçekçi mi, yoksa görüntüyle eşleşmiyor mu?",
+    wiki7Title: "Kurgu",
+    wiki7Desc: "Çekilen sahnelerin ve seslerin birleştirilerek filmin ritminin inşa edilmesidir. Sahneler arası geçişlerin akıcılığı, zaman algısının yönetimi ve hikayenin psikolojik temposu doğrudan kurgunun başarısıyla ölçülür.",
+    wiki8Title: "Sanat Yönetimi",
+    wiki8Desc: "Filmin geçtiği evrenin organik ve inandırıcı bir şekilde görselleştirilmesidir. Sırf gösteriş olsun diye yapılan tasarımlardan ziyade; dekor, kostüm ve mekanların hikayeye hizmet etmesi ve karakterlerin iç dünyasını yansıtmadaki işlevselliği ile değerlendirilir.",
+    wiki9Title: "Yönetmenlik",
+    wiki9Desc: "Tüm teknik ve anlatısal unsurların (oyunculuk, sinematografi, ses, sanat yönetimi) tek bir tutarlı vizyon altında orkestra edilmesidir. Yönetmenin, yaratılan dünyanın atmosferini ve mesaja dair sanatsal imzasını filme ne kadar iyi aktarabildiğini gösterir."
+  },
+  en: {
+    appTitle: "Film Ranker",
+    placeholder: "Film Title...",
+    titleZanaat: "Artisanship",
+    titleDerinlik: "Depth",
+    titleKisisel: "Personal Impact",
+    labelResult: "result",
+    saveBtn: "+ add to list",
+    titleSaved: "saved films",
+    exportBtn: "download CSV",
+    emptyState: "No films saved yet.",
+    warningText: "This tool is entirely subjective. The items here are not strict rules, but suggestions and definitions to guide personal evaluations.",
+    delBtn: "Delete",
+    
+    titleReferences: "References",
+    ex1Title: "Ran (乱) - Akira Kurosawa (1985)",
+    ex1Desc: "An incredible example of cinematography that can be used as a reference to score the mentioned criteria.",
+    
+    titleWiki: "Wiki / References",
+    wiki1Title: "Cinematography",
+    wiki1Desc: "The art of making choices regarding lighting, camera angles, and composition when recording a film. It is the discipline of telling a story visually. It deals with how elements are placed on the screen and conveyed to the audience.",
+    wiki2Title: "Scenario",
+    wiki2Desc: "The written text showing the flow of scenes, dialogues, and events. In this context, it refers to how the plot and dialogues are conveyed to us, independent of the film's visuals and sound.",
+    wiki3Title: "Acting",
+    wiki3Desc: "The performance displayed by the actors in the film. It measures whether they successfully convey emotions to the audience.",
+    wiki4Title: "Technical Execution",
+    wiki4Desc: "Refers to how well the equipment, practical, and visual effects are created and utilized in the film.",
+    wiki5Title: "Pacing",
+    wiki5Desc: "Deals with how engaging the film is. When watching a well-paced film, you lose track of time and cannot take your eyes off the screen.",
+    wiki6Title: "Sound & Score",
+    wiki6Desc: "The sound and music design of the film. Does the music enhance the emotion, or does it feel redundant? Are the sound designs realistic, or do they mismatch the visuals?",
+    wiki7Title: "Editing",
+    wiki7Desc: "The construction of the film's rhythm by combining recorded scenes and sounds. The fluidity of transitions, management of time perception, and the psychological tempo are measured by the success of the editing.",
+    wiki8Title: "Production Design",
+    wiki8Desc: "The organic and believable visualization of the universe the film takes place in. Valued for its functionality in serving the story and reflecting the inner worlds of the characters, rather than just for show.",
+    wiki9Title: "Directing",
+    wiki9Desc: "The orchestration of all technical and narrative elements under a single cohesive vision. Shows how well the director can transfer the atmosphere of the created world and their artistic signature regarding the message to the film."
+  }
+};
 
 const CRITERIA = {
   zanaat: [
-    ['cine', 'Cinematography'], ['senaryo', 'Scenario'], ['oyun', 'Acting'],
-    ['teknik', 'Technical Execution'], ['akici', 'Pacing']
+    ['cine', { en: 'Cinematography', tr: 'Sinematografi' }], 
+    ['senaryo', { en: 'Scenario', tr: 'Senaryo' }], 
+    ['oyun', { en: 'Acting', tr: 'Oyunculuk' }],
+    ['teknik', { en: 'Technical Execution', tr: 'Teknik İşçilik' }], 
+    ['akici', { en: 'Pacing', tr: 'Akıcılık' }],
+    ['ses', { en: 'Sound & Score', tr: 'Ses ve Müzik' }],
+    ['kurgu', { en: 'Editing', tr: 'Kurgu' }],
+    ['sanat', { en: 'Production Design', tr: 'Sanat Yönetimi' }],
+    ['yonetmen', { en: 'Directing', tr: 'Yönetmenlik' }]
   ],
-  derinlik: [['altmetin', 'Subtext'], ['ozgun', 'Authenticity']],
-  kisisel: [['etki', 'Impact'], ['kalici', 'Permanence']]
+  derinlik: [
+    ['altmetin', { en: 'Subtext', tr: 'Alt Metin' }], 
+    ['ozgun', { en: 'Authenticity', tr: 'Özgünlük' }],
+    ['karakter', { en: 'Character Arc', tr: 'Karakter Gelişimi' }]
+  ],
+  kisisel: [
+    ['etki', { en: 'Impact', tr: 'Etki' }], 
+    ['kalici', { en: 'Permanence', tr: 'Kalıcılık' }]
+  ]
 };
 
 function buildSliders(containerId, items) {
   const c = document.getElementById(containerId);
-  items.forEach(([id, label]) => {
-    const row = document.createElement('div');
-    row.className = 'row';
-    row.innerHTML = `<label>${label}</label>
-      <input type="range" min="1" max="5" step="0.5" value="3" id="${id}">
-      <span class="out" id="${id}Out">3</span>`;
-    c.appendChild(row);
+  items.forEach(([id, labels]) => {
+    let row = document.getElementById(`row-${id}`);
+    if (!row) {
+      row = document.createElement('div');
+      row.className = 'row';
+      row.id = `row-${id}`;
+      row.innerHTML = `
+        <label id="label-${id}">${labels[currentLang]}</label>
+        <input type="range" min="1" max="5" step="0.5" value="3" id="${id}">
+        <span class="out" id="${id}Out">3</span>`;
+      c.appendChild(row);
+      document.getElementById(id).addEventListener('input', updateAll);
+    } else {
+      document.getElementById(`label-${id}`).textContent = labels[currentLang];
+    }
   });
 }
-buildSliders('zanaatSliders', CRITERIA.zanaat);
-buildSliders('derinlikSliders', CRITERIA.derinlik);
-buildSliders('kisiselSliders', CRITERIA.kisisel);
 
-function avg(ids) {
-  return ids.reduce((s, [id]) => s + parseFloat(document.getElementById(id).value), 0) / ids.length;
+function initSliders() {
+  buildSliders('zanaatSliders', CRITERIA.zanaat);
+  buildSliders('derinlikSliders', CRITERIA.derinlik);
+  buildSliders('kisiselSliders', CRITERIA.kisisel);
+}
+
+function updateInterfaceLanguage() {
+  const dict = DICT[currentLang];
+  document.documentElement.lang = currentLang;
+  
+  // Main UI Texts
+  document.getElementById('appTitle').textContent = dict.appTitle;
+  document.getElementById('filmTitle').placeholder = dict.placeholder;
+  document.getElementById('titleZanaat').textContent = dict.titleZanaat;
+  document.getElementById('titleDerinlik').textContent = dict.titleDerinlik;
+  document.getElementById('titleKisisel').textContent = dict.titleKisisel;
+  document.getElementById('labelResult').textContent = dict.labelResult;
+  document.getElementById('saveBtn').textContent = dict.saveBtn;
+  document.getElementById('titleSaved').textContent = dict.titleSaved;
+  document.getElementById('exportBtn').textContent = dict.exportBtn;
+  document.getElementById('warningBox').textContent = dict.warningText;
+  
+  // References
+  document.getElementById('titleReferences').textContent = dict.titleReferences;
+  document.getElementById('ex1Title').textContent = dict.ex1Title;
+  document.getElementById('ex1Desc').textContent = dict.ex1Desc;
+  
+  // Wiki Texts
+  document.getElementById('titleWiki').textContent = dict.titleWiki;
+  document.getElementById('wiki1Title').textContent = dict.wiki1Title;
+  document.getElementById('wiki1Desc').textContent = dict.wiki1Desc;
+  document.getElementById('wiki2Title').textContent = dict.wiki2Title;
+  document.getElementById('wiki2Desc').textContent = dict.wiki2Desc;
+  document.getElementById('wiki3Title').textContent = dict.wiki3Title;
+  document.getElementById('wiki3Desc').textContent = dict.wiki3Desc;
+  document.getElementById('wiki4Title').textContent = dict.wiki4Title;
+  document.getElementById('wiki4Desc').textContent = dict.wiki4Desc;
+  document.getElementById('wiki5Title').textContent = dict.wiki5Title;
+  document.getElementById('wiki5Desc').textContent = dict.wiki5Desc;
+  document.getElementById('wiki6Title').textContent = dict.wiki6Title;
+  document.getElementById('wiki6Desc').textContent = dict.wiki6Desc;
+  document.getElementById('wiki7Title').textContent = dict.wiki7Title;
+  document.getElementById('wiki7Desc').textContent = dict.wiki7Desc;
+  document.getElementById('wiki8Title').textContent = dict.wiki8Title;
+  document.getElementById('wiki8Desc').textContent = dict.wiki8Desc;
+  document.getElementById('wiki9Title').textContent = dict.wiki9Title;
+  document.getElementById('wiki9Desc').textContent = dict.wiki9Desc;
+
+  initSliders();
+  renderSaved();
+}
+
+document.getElementById('langSelect').addEventListener('change', (e) => {
+  currentLang = e.target.value;
+  updateInterfaceLanguage();
+});
+
+function avg(items) {
+  return items.reduce((s, [id]) => s + parseFloat(document.getElementById(id).value), 0) / items.length;
 }
 
 function computeFinal() {
   const z = avg(CRITERIA.zanaat);
   const d = avg(CRITERIA.derinlik);
   const k = avg(CRITERIA.kisisel);
-  let final = (z * 1 + d * 1 + k * 1.5) / 3.5;
+  let final = (z * 1 + d * 1 + k * 1.5) / 3.5; 
   final = Math.round(final * 2) / 2;
   return { final, z, d, k };
 }
@@ -205,8 +507,6 @@ function updateAll() {
   document.getElementById('resultVal').textContent = final.toFixed(1);
   renderStars(document.getElementById('starRow'), final);
 }
-document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('input', updateAll));
-updateAll();
 
 function getSaved() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
@@ -217,24 +517,30 @@ function setSaved(list) {
 }
 
 function renderSaved() {
+  const dict = DICT[currentLang];
   const listEl = document.getElementById('savedList');
   const items = getSaved().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   if (items.length === 0) {
-    listEl.innerHTML = '<p class="empty-state">No films saved yet.</p>';
+    listEl.innerHTML = `<p class="empty-state">${dict.emptyState}</p>`;
     return;
   }
   listEl.innerHTML = '';
   items.forEach(item => {
     const row = document.createElement('div');
     row.className = 'savedRow';
-    const dateStr = item.date ? new Date(item.date).toLocaleDateString('tr-TR') : '';
+    const dateStr = item.date ? new Date(item.date).toLocaleDateString(currentLang === 'tr' ? 'tr-TR' : 'en-US') : '';
+    
+    const zName = DICT[currentLang].titleZanaat;
+    const dName = DICT[currentLang].titleDerinlik;
+    const kName = DICT[currentLang].titleKisisel;
+
     row.innerHTML = `<div>
         <p class="title">${item.title}</p>
-        <p class="meta">Artisanship ${item.z.toFixed(1)} · Depth ${item.d.toFixed(1)} · Personal Impact ${item.k.toFixed(1)} · ${dateStr}</p>
+        <p class="meta">${zName} ${item.z.toFixed(1)} · ${dName} ${item.d.toFixed(1)} · ${kName} ${item.k.toFixed(1)} · ${dateStr}</p>
       </div>
       <div style="display:flex; align-items:center; gap:10px;">
         <span class="score">${item.final.toFixed(1)}</span>
-        <button class="delBtn" data-id="${item.id}">Delete</button>
+        <button class="delBtn" data-id="${item.id}">${dict.delBtn}</button>
       </div>`;
     listEl.appendChild(row);
   });
@@ -263,7 +569,7 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   const items = getSaved().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const header = 'Film,Score,Artisanship,Depth,Personal Impact,Date';
   const rows = items.map(i => {
-    const dateStr = i.date ? new Date(i.date).toLocaleDateString('tr-TR') : '';
+    const dateStr = i.date ? new Date(i.date).toLocaleDateString(currentLang === 'tr' ? 'tr-TR' : 'en-US') : '';
     const safeTitle = '"' + i.title.replace(/"/g, '""') + '"';
     return [safeTitle, i.final.toFixed(1), i.z.toFixed(1), i.d.toFixed(1), i.k.toFixed(1), dateStr].join(',');
   });
@@ -277,7 +583,10 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-renderSaved();
+initSliders();
+updateInterfaceLanguage();
+updateAll();
+
 </script>
 </body>
 </html>
