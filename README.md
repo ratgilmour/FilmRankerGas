@@ -49,5 +49,33 @@ Kişisel deneyim ve hisler her zaman ön planda olduğu için, nihai puan hesapl
 *   **Vanilla JavaScript (ES6+):** DOM manipulation, dynamic event listeners, and `localStorage` API for data persistence.
 *   **No Frameworks:** Lightweight, fast, and purely raw code.
 
+
+## Project Updates & Features (GAS Film Ranker)
+
+   1. Permanent Dark Theme Lock: Removed light/dark media queries and locked the interface into a fixed, premium dark theme matching the exact background color of the logo (#222222).
+   2. Custom Brand Logo Integration: Replaced the standard text-based header (<h1>) in the top left corner with the project's official brand logo (logoGas1.png).
+   3. TMDB API Live Search & Metadata Integration: Integrated a live movie search dropdown connected to The Movie Database (TMDB) API, dynamically fetching film titles, release years, director names, and high-resolution posters into the active session memory.
+   4. Letterboxd-Style Export Card Feature:
+
+        Designed a hidden export template (#exportCard) that compiles the movie poster, title, release year, director, user ratings, star breakdown, and personal review notes into a clean, modern card layout.
+
+        Integrated the html2canvas library to render and download this customized card instantly as a high-resolution (scale: 2) PNG image.
+    5. CORS & Security Optimization: Implemented a secure Base64 image conversion pipeline for fetched movie posters, resolving local file (file:///) and cross-origin security restrictions to ensure seamless image capturing.
+
+## Güncelleme ve Yeni Eklenen Özellikler (GAS Film Puanlayıcı)
+    
+   1. Karanlık Tema Kilidi: Aydınlık/karanlık mod sorguları kaldırılarak, logonun arka plan rengiyle (#222222) kusursuz uyum sağlayan sabit ve premium bir karanlık tema altyapısına geçildi.
+
+   2. Özel Marka Logosu Entegrasyonu: Sol üst köşedeki standart metin tabanlı başlık (<h1>) gizlenerek, yerine projenin orijinal marka logosu (logoGas1.png) yerleştirildi.    
+
+   3. TMDB API Canlı Arama ve Afiş Desteği: Film arama çubuğuna entegre edilen canlı arama sistemi ile veriler The Movie Database (TMDB) üzerinden çekilir hale getirildi; ayrıca her filmin yönetmen bilgisi ve yüksek çözünürlüklü afiş URL'si dinamik olarak hafızaya alınmaya başlandı.
+
+   4. Görsel İndir (Export Card) Özelliği:
+
+   5. Kullanıcının yaptığı puanlamaları, kişisel notları, film adını, vizyon yılını, yönetmeni ve afişi estetik bir Letterboxd/Instagram tarzı kartta birleştiren gizli bir export alanı (#exportCard) eklendi.
+   6. html2canvas kütüphanesi entegre edilerek bu gizli kartın tek tıkla yüksek çözünürlüklü (scale: 2) bir PNG görseline dönüştürülüp indirilmesi sağlandı.
+   7. CORS ve Yerel Dosya Güvenlik Optimizasyonu: file:/// (yerel bilgisayar) ortamından kaynaklanan canvas güvenlik kısıtlamalarını aşmak için harici afiş görselleri güvenli Base64 formatına çevrilerek indirme mekanizması kararlı hale getirildi.
+
+
 ---
 *Created by Gün Alperen Saka &middot; made with ai*
