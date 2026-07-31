@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="eng">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Film Puanlama Hesaplayıcısı</title>
+<title>Film Ranker</title>
 <style>
   :root {
     --bg: #faf9f6;
@@ -104,38 +104,38 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Film puanlama hesaplayıcısı</h1>
+  <h1>Film Ranker</h1>
 
-  <input type="text" id="filmTitle" placeholder="Film adı">
+  <input type="text" id="filmTitle" placeholder="Film Title">
 
   <div class="card">
-    <h2>zanaat</h2>
+    <h2>Artisanship</h2>
     <div id="zanaatSliders"></div>
   </div>
 
   <div class="card">
-    <h2>derinlik</h2>
+    <h2>Depth</h2>
     <div id="derinlikSliders"></div>
   </div>
 
   <div class="card">
-    <h2>kişisel etki</h2>
+    <h2>Personal Impact</h2>
     <div id="kisiselSliders"></div>
   </div>
 
   <div class="result">
     <div>
-      <p class="label">sonuç</p>
+      <p class="label">result</p>
       <p class="num" id="resultVal">3.0</p>
     </div>
     <div class="stars" id="starRow"></div>
   </div>
 
-  <button id="saveBtn">+ listeye ekle</button>
+  <button id="saveBtn">+ add to list</button>
 
   <div class="toolbar">
-    <h2>kaydedilen filmler</h2>
-    <button id="exportBtn">CSV indir</button>
+    <h2>saved films</h2>
+    <button id="exportBtn">download CSV</button>
   </div>
   <div id="savedList"></div>
 </div>
@@ -220,7 +220,7 @@ function renderSaved() {
   const listEl = document.getElementById('savedList');
   const items = getSaved().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   if (items.length === 0) {
-    listEl.innerHTML = '<p class="empty-state">Henüz film eklenmedi.</p>';
+    listEl.innerHTML = '<p class="empty-state">No films saved yet.</p>';
     return;
   }
   listEl.innerHTML = '';
@@ -230,11 +230,11 @@ function renderSaved() {
     const dateStr = item.date ? new Date(item.date).toLocaleDateString('tr-TR') : '';
     row.innerHTML = `<div>
         <p class="title">${item.title}</p>
-        <p class="meta">zanaat ${item.z.toFixed(1)} · derinlik ${item.d.toFixed(1)} · etki ${item.k.toFixed(1)} · ${dateStr}</p>
+        <p class="meta">Artisanship ${item.z.toFixed(1)} · Depth ${item.d.toFixed(1)} · Personal Impact ${item.k.toFixed(1)} · ${dateStr}</p>
       </div>
       <div style="display:flex; align-items:center; gap:10px;">
         <span class="score">${item.final.toFixed(1)}</span>
-        <button class="delBtn" data-id="${item.id}">Sil</button>
+        <button class="delBtn" data-id="${item.id}">Delete</button>
       </div>`;
     listEl.appendChild(row);
   });
@@ -261,7 +261,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 
 document.getElementById('exportBtn').addEventListener('click', () => {
   const items = getSaved().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  const header = 'Film,Puan,Zanaat,Derinlik,Kisisel Etki,Tarih';
+  const header = 'Film,Score,Artisanship,Depth,Personal Impact,Date';
   const rows = items.map(i => {
     const dateStr = i.date ? new Date(i.date).toLocaleDateString('tr-TR') : '';
     const safeTitle = '"' + i.title.replace(/"/g, '""') + '"';
@@ -272,7 +272,7 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'film-puanlarim.csv';
+  a.download = 'film-ratings.csv';
   a.click();
   URL.revokeObjectURL(url);
 });
