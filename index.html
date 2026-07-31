@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GAS Film Ranker</title>
@@ -9,30 +10,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #faf9f6;
-    --card: #ffffff;
-    --border: #e4e2dc;
-    --text: #1c1c1a;
-    --text-secondary: #6b6a64;
-    --text-muted: #9b9a93;
-    --accent: #185fa5;
-    --accent-bg: #e6f1fb;
-    --star-empty: #d3d1c7;
-    --danger: #a32d2d;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1c1c1a;
-      --card: #262624;
-      --border: #3a3a37;
-      --text: #f1efe8;
-      --text-secondary: #b4b2a9;
-      --text-muted: #888780;
-      --accent: #85b7eb;
-      --accent-bg: #0c447c;
-      --star-empty: #444441;
-      --danger: #f09595;
-    }
+   --bg: #222222;
+   --card: #2a2a2a;
+   --border: #3f3f3f;
+   --text: #f1efe8;
+   --text-secondary: #b4b2a9;
+   --text-muted: #888780;
+   --accent: #85b7eb;
+   --accent-bg: #0c447c;
+   --star-empty: #444441;
+   --danger: #f09595;
   }
   * { box-sizing: border-box; }
   body {
@@ -44,10 +31,10 @@
   }
   
   h1, h2, h3, h4 {
-  font-family: 'Lora', serif;
-  font-weight: 600;
-  text-transform: capitalize;
-}
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
 
   .wrap { max-width: 1200px; margin: 0 auto; }
   
@@ -108,7 +95,7 @@
     line-height: 1.4;
   }
   
-  input[type="text"] {
+  input[type="text"], textarea {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid var(--border);
@@ -116,8 +103,11 @@
     background: var(--card);
     color: var(--text);
     font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none; 
     margin-bottom: 0.75rem;
   }
+
   .row { display: flex; align-items: center; gap: 12px; margin-bottom: 0.6rem; }
   .row label { font-size: 13px; color: var(--text-secondary); width: 130px; flex-shrink: 0; }
   .row input[type="range"] { flex: 1; accent-color: var(--accent); }
@@ -149,7 +139,6 @@
     font-weight: 600;
   }
   button:hover { background: var(--accent-bg); }
-  #saveBtn { width: 100%; margin-bottom: 1.5rem; }
   
   .savedRow {
     display: flex; align-items: center; justify-content: space-between;
@@ -163,8 +152,8 @@
   
   .toolbar { display: flex; justify-content: space-between; align-items: center; margin: 1.5rem 0 0.5rem; }
   .toolbar h2 { font-size: 15px; font-weight: 600; margin: 0; text-transform: capitalize; }
-  .toolbar button { font-size: 12px; padding: 6px 10px; font-weight: normal; }
   .empty-state { font-size: 13px; color: var(--text-muted); padding: 8px 0; }
+  
   .footer-note {
     text-align: right;
     font-size: 12px;
@@ -174,21 +163,214 @@
     border-top: 1px solid var(--border);
   }
 
+  .search-container {
+    position: relative;
+    margin-bottom: 0.75rem;
+  }
+
+  .dropdown-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    margin-top: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .dropdown-item:last-child { border-bottom: none;}
+  .dropdown-item:hover { background: var(--accent-bg); }
+  
+  .dropdown-poster {
+    width: 36px;
+    height: 52px;
+    border-radius: 4px;
+    object-fit: cover;
+    background-color: var(--border);
+    flex-shrink: 0;
+  }
+
+  .dropdown-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dropdown-info .title { font-weight: 500; color: var(--text); }
+  .dropdown-info .year { color: var(--text-muted); font-size: 12px; }
+
+  .tmdb-attribution {
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 11px;
+  }
+
+  .tmdb-attribution img {
+    height: 12px; 
+  }
+
+  .site-header-logo {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* EXPORT CARD STYLES */
+  .export-card {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    width: 800px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .ec-header {
+    background: #1c1c1a;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    padding: 0 50px;
+  }
+
+  .ec-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 20px;  
+  }
+
+  #ecLogo {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+  }
+  
+  .ec-brand {
+    color: #ffffff;
+    font-size: 48px;
+    font-weight: 400;
+  }
+  
+  .ec-body {
+    flex: 1;
+    display: flex;
+    padding: 50px;
+    gap: 40px;
+  }
+  
+  .ec-poster {
+    width: 320px;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .ec-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ec-title-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-bottom: 10px;
+  }
+  
+  #ecTitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #0c3b5e;
+    margin: 0;
+    text-align: right;
+  }
+  
+  #ecYear {
+    font-size: 24px;
+    font-weight: 600;
+    color: #0c3b5e;
+    margin-top: 5px;
+  }
+  
+  .ec-divider {
+    height: 1px;
+    background: #b0b0b0;
+    margin: 15px 0;
+    width: 100%;
+  }
+  
+  #ecDirector {
+    font-family: 'Lora', serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: #0c3b5e;
+    margin: 0;
+  }
+  
+  .ec-score-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .ec-stars {
+    display: flex;
+    gap: 4px;
+  }
+  .ec-stars svg { width: 30px; height: 30px; }
+  .ec-stars path { fill: #222222; }
+  
+  .ec-score-text {
+    font-size: 28px;
+    font-weight: 500;
+    color: #0c3b5e;
+  }
+  
+  #ecReview {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #4a4a4a;
+    margin-top: 10px;
+    text-align: justify;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   
-  <!-- 1. BAŞLIK KISMI (Burada başlar ve biter) -->
   <div class="header-row">
-    <h1 id="appTitle">GAS Film Ranker</h1>
+    <img src="logoGas1.png" alt="GAS Film Ranker" class="site-header-logo">
+    <h1 id="appTitle" style="display: none;">GAS Film Ranker</h1>
     <select id="langSelect">
       <option value="tr">Türkçe</option>
       <option value="en">English</option>
     </select>
   </div>
 
-  
   <div class="card" id="warningBox" style="margin-bottom: 1.5rem; font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
     Hazırlanan bu araç tamamen subjektiftir. Buradaki maddeler ve örnekler katı kurallar değil, kişisel değerlendirmeleri yönlendiren öneriler ve tanımlardır.
   </div>
@@ -209,8 +391,13 @@
 
     <!-- 2. ORTA SÜTUN: Ranker ve Kaydedilenler -->
     <div class="mid-col">
-      <input type="text" id="filmTitle" placeholder="Film Title">
+      <div class="search-container">
+        <input type="text" id="movieSearchInput" placeholder="Film Title..." autocomplete="off">
+        <div id="searchResultsDropdown" class="dropdown-results" style="display: none;"></div>
+      </div>
 
+      <textarea id="filmReviewInput" placeholder="Kişisel notlar..." rows="2"></textarea>
+      
       <div class="card">
         <h2 id="titleZanaat">Artisanship</h2>
         <div id="zanaatSliders"></div>
@@ -234,11 +421,14 @@
         <div class="stars" id="starRow"></div>
       </div>
 
-      <button id="saveBtn">+ add to list</button>
+      <!-- BUTONLAR BURAYA HİZALANDI -->
+      <div style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
+        <button id="saveBtn" style="flex: 1;">+ listeye ekle</button>
+        <button id="downloadCardBtn" style="flex: 1; background: #0c3b5e; color: #fff; border: none;">Kartı İndir</button>
+      </div>
 
       <div class="toolbar">
         <h2 id="titleSaved">saved films</h2>
-        <button id="exportBtn">download CSV</button>
       </div>
       <div id="savedList"></div>
     </div>
@@ -299,37 +489,164 @@
             <p class="example-desc" id="wiki10Desc"></p>
           </div>
 
-         <div class="example-item">
+          <div class="example-item">
             <p class="example-title" id="wiki11Title"></p>
             <p class="example-desc" id="wiki11Desc"></p>
-         </div>
+          </div>
 
-         <div class="example-item">
+          <div class="example-item">
             <p class="example-title" id="wiki12Title"></p>
             <p class="example-desc" id="wiki12Desc"></p>
-         </div>
-         
-         <div class="example-item">
+          </div>
+
+          <div class="example-item">
             <p class="example-title" id="wiki13Title"></p>
             <p class="example-desc" id="wiki13Desc"></p>
-         </div>
-  
-         <div class="example-item">
+          </div>
+
+          <div class="example-item">
             <p class="example-title" id="wiki14Title"></p>
             <p class="example-desc" id="wiki14Desc"></p>
-         </div>
+          </div>
 
+        </div>
       </div>
-    
+    </div>
+
+  </div> <!-- layout end -->
+
+  <div class="footer-note">
+    <div>Gün Alperen Saka &middot; Made with AI</div>
+    <div class="tmdb-attribution">
+      This product uses the TMDB API but is not endorsed or certified by TMDB.
+      <img src="Asset 3.svg" alt="TMDB Logo">
+    </div>
   </div>
- <div class="footer-note">
-  Gün Alperen Saka &middot; Made with AI
- </div>
+
+</div> <!-- wrap end -->
+
+<!-- GİZLİ EXPORT KARTI -->
+<div id="exportCard" class="export-card">
+  <div class="ec-header">
+    <div class="ec-logo-area">
+      <img src="logoGas1.png" alt="gas" id="ecLogo"> 
+      <span class="ec-brand">FilmRanker</span>
+    </div>
+  </div>
+  <div class="ec-body">
+    <img src="" id="ecPoster" class="ec-poster" crossorigin="anonymous">
+    <div class="ec-content">
+      <div class="ec-title-row">
+        <h2 id="ecTitle">Movie Title Here</h2>
+        <span id="ecYear">Year</span>
+      </div>
+      <div class="ec-divider"></div>
+      <h3 id="ecDirector">Director Name</h3>
+      <div class="ec-divider"></div>
+      <div class="ec-score-row">
+        <div id="ecStars" class="ec-stars"></div>
+        <span id="ecScore" class="ec-score-text">4.0/5</span>
+      </div>
+      <div class="ec-divider"></div>
+      <p id="ecReview">Review text goes here...</p>
+    </div>
+  </div>
 </div>
 
 <script>
-const STORAGE_KEY = 'gunFilmRatings';
-let currentLang = 'tr'; 
+const TMDB_API_KEY = '53cc146dfc9c2695efe49b3cc2b98416';
+const STORAGE_KEY = 'gas_film_ranker_saved';
+let currentLang = 'tr';
+let activeMovie = { title: "", year: "", director: "", poster: "" };
+
+const searchInput = document.getElementById('movieSearchInput');
+const dropdown = document.getElementById('searchResultsDropdown');
+let searchTimeout;
+
+searchInput.addEventListener('input', function() {
+  clearTimeout(searchTimeout);
+  const query = this.value.trim();
+  
+  if (query.length < 2) {
+    dropdown.style.display = 'none';
+    dropdown.innerHTML = '';
+    return;
+  }
+
+  searchTimeout = setTimeout(() => {
+    const langParam = currentLang === 'tr' ? 'tr-TR' : 'en-US';
+    fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=${langParam}`)
+      .then(response => response.json())
+      .then(data => {
+        displaySearchResults(data.results);
+      })
+      .catch(err => console.error('TMDB Error:', err));
+  }, 300);
+});
+
+function displaySearchResults(movies) {
+  dropdown.innerHTML = '';
+  if (!movies || movies.length === 0) {
+    dropdown.style.display = 'none';
+    return;
+  }
+
+  movies.slice(0, 5).forEach(movie => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+    
+    const year = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
+    const posterSrc = movie.poster_path 
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
+      : 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
+
+    item.innerHTML = `
+      <img src="${posterSrc}" alt="Poster" class="dropdown-poster">
+      <div class="dropdown-info">
+        <span class="title">${movie.title}</span>
+        <span class="year">${year} <span class="director-name"></span></span>
+      </div>
+    `;
+    
+    let fetchedDirector = "";
+    
+    fetch(`https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${TMDB_API_KEY}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.crew) {
+          const director = data.crew.find(member => member.job === 'Director');
+          if (director) {
+            fetchedDirector = director.name;
+            const dirSpan = item.querySelector('.director-name');
+            if (dirSpan) dirSpan.textContent = `• ${director.name}`;
+          }
+        }
+      })
+      .catch(err => console.error('TMDB Crew Error:', err));
+
+    item.addEventListener('click', () => {
+      searchInput.value = movie.title;
+      dropdown.style.display = 'none';
+      
+      activeMovie = {
+        title: movie.title,
+        year: year,
+        director: fetchedDirector,
+        poster: posterSrc
+      };
+    });
+
+    dropdown.appendChild(item);
+  });
+
+  dropdown.style.display = 'block';
+}
+
+document.addEventListener('click', (e) => {
+  if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+    dropdown.style.display = 'none';
+  }
+});
 
 const DICT = {
   tr: {
@@ -341,7 +658,6 @@ const DICT = {
     labelResult: "sonuç",
     saveBtn: "+ listeye ekle",
     titleSaved: "kaydedilen filmler",
-    exportBtn: "CSV indir",
     emptyState: "Henüz film kaydedilmedi.",
     warningText: "Hazırlanan bu araç tamamen subjektiftir. Buradaki maddeler ve örnekler katı kurallar değil, kişisel değerlendirmeleri yönlendiren öneriler ve tanımlardır.",
     delBtn: "Sil",
@@ -352,33 +668,33 @@ const DICT = {
     
     titleWiki: "Bilgilendirme",
     wiki1Title: "Sinematografi",
-    wiki1Desc: "Bir film için görüntü kaydederken ışıklandırma, kamera açıları ve kompozisyon tercihleri yapma sanatıdır. Genel olarak, bir hikayeyi görsel olarak anlatma disiplinidir. Kamera açıları, ekranda görünen kişi objelerin yerleşimi gibi, ekranda gördüğüm çoğu şeyin ekrana nasıl yerleştirildiği ve bize nasıl aktarıldığı ile ilgilenir. Kendinize şunu sorabilirsiniz: Film güzel gözüküyor muydu?",
+    wiki1Desc: "Bir film için görüntü kaydederken ışıklandırma, kamera açıları ve kompozisyon tercihleri yapma sanatıdır. Genel olarak, bir hikayeyi görsel olarak anlatma disiplinidir.",
     wiki2Title: "Senaryo",
-    wiki2Desc: "Filmin sahne akışını, diyaloglarını ve olaylarını gösteren yazılı metindir. Ancak burada kullanılan anlamıyla senaryo, izlediğimiz filmin olay örgüsünün ve diyaloglarının bize nasıl aktarıldığıyla ilgilenir. Bu, filmin görüntü ve sesinden bağımsız olarak bize aktarılan sözel ve/veya soyut ögeleri kapsar. Bunun yanında, hikayesinde mantık hataları barındırıp barındırmaması da oldukça önemlidir. Bir filmin içindeki olaylar size saçma ve mantıksız hissettiriyorsa senaryosu zayıf diyebilirsiniz.",
+    wiki2Desc: "Filmin sahne akışını, diyaloglarını ve olaylarını gösteren yazılı metindir.",
     wiki3Title: "Oyunculuk",
-    wiki3Desc: "Filmde rol alan aktörlerin sergilediği performanstır. İzleyiciye duyguyu yansıtıp yansıtamadıklarıyla ilgilenir.",
+    wiki3Desc: "Filmde rol alan aktörlerin sergilediği performanstır.",
     wiki4Title: "Teknik İşçilik",
     wiki4Desc: "Filmde kullanılan ekipmanların, pratik ve görsel efektlerin ne kadar iyi yaratıldığı ve kullanıldığıyla ilgilidir.",
     wiki5Title: "Akıcılık",
-    wiki5Desc: "Filmin kendini ne ölçüde izlettirdiğiyle ilgilenir. Akıcı bir film izlerken zamanın nasıl geçtiğini anlamazsınız veya ekran başından kalkamazsınız.",
+    wiki5Desc: "Filmin kendini ne ölçüde izlettirdiğiyle ilgilenir.",
     wiki6Title: "Ses ve Müzik",
-    wiki6Desc: "Filmin ses ve müzik tasarımıdır. Filmde çalan müzikler duyguyu pekiştiriyor mu, yoksa fazlalık gibi mi hissettiriyor? Ses tasarımları gerçekçi mi, yoksa görüntüyle eşleşmiyor mu?",
+    wiki6Desc: "Filmin ses ve müzik tasarımıdır.",
     wiki7Title: "Kurgu",
-    wiki7Desc: "Çekilen sahnelerin ve seslerin birleştirilerek filmin ritminin inşa edilmesidir. Sahneler arası geçişlerin akıcılığı, zaman algısının yönetimi ve hikayenin psikolojik temposu doğrudan kurgunun başarısıyla ölçülür.",
+    wiki7Desc: "Çekilen sahnelerin ve seslerin birleştirilerek filmin ritminin inşa edilmesidir.",
     wiki8Title: "Sanat Yönetimi",
-    wiki8Desc: "Filmin geçtiği evrenin organik ve inandırıcı bir şekilde görselleştirilmesidir. Sırf gösteriş olsun diye yapılan tasarımlardan ziyade; dekor, kostüm ve mekanların hikayeye hizmet etmesi ve karakterlerin iç dünyasını yansıtmadaki işlevselliği ile değerlendirilir.",
+    wiki8Desc: "Filmin geçtiği evrenin organik ve inandırıcı bir şekilde görselleştirilmesidir.",
     wiki9Title: "Yönetmenlik",
-    wiki9Desc: "Tüm teknik ve anlatısal unsurların (oyunculuk, sinematografi, ses, sanat yönetimi) tek bir tutarlı vizyon altında orkestra edilmesidir. Yönetmenin, yaratılan dünyanın atmosferini ve mesaja dair sanatsal imzasını filme ne kadar iyi aktarabildiğini gösterir.",
+    wiki9Desc: "Tüm teknik ve anlatısal unsurların tek bir tutarlı vizyon altında orkestra edilmesidir.",
     wiki10Title: "Alt Metin",
-    wiki10Desc: "Karakterlerin söylediklerinin veya ekranda yaşanan somut olayların ardında yatan psikolojik, sosyolojik ve felsefi katmanlardır. Hikayenin yüzeydeki gürültüsünden ziyade, izleyiciye sezdirilen sessiz, derindeki anlamı ve temanın gücünü ölçer.",
+    wiki10Desc: "Karakterlerin söylediklerinin veya ekranda yaşanan somut olayların ardında yatan psikolojik, sosyolojik ve felsefi katmanlardır.",
     wiki11Title: "Özgünlük",
-    wiki11Desc: "Eserin yapaylıktan, gişe kaygısından ve gösteriş amaçlı klişelerden uzak durup durmadığıyla ilgilenir. Hikayenin ve evrenin kendi organik kuralları içinde ne kadar tutarlı hissettirdiği ve kendi doğasını ne ölçüde koruduğuyla ilgilenir. Bunun yanında, filmin aynı kulvardaki diğer filmlere ne ölçüde benzeyip benzemediği de önemlidir.",
+    wiki11Desc: "Eserin yapaylıktan, gişe kaygısından ve gösteriş amaçlı klişelerden uzak durup durmadığıyla ilgilenir.",
     wiki12Title: "Karakter Tasarımı",
-    wiki12Desc: "Karakterlerin motivasyonlarının, travmalarının ve gelişimlerinin psikolojik bir tutarlılıkla inşa edilmesidir. Karakterlerin olaylara verdikleri tepkilerin senaryo zorlamasıyla değil, kendi iç dünyalarının organik ve gerçekçi bir sonucu olarak gerçekleşip gerçekleşmediğini değerlendirir. Karakter sığ ve sıradan da olabilir, derin ve orijinal de.",
+    wiki12Desc: "Karakterlerin motivasyonlarının, travmalarının ve gelişimlerinin psikolojik bir tutarlılıkla inşa edilmesidir.",
     wiki13Title: "Etki",
-    wiki13Desc: "Filmin üzerinizde bıraktığı etki. Burası puanlaması en zor kısımdır. Örneğin bazı filmler insanları sinirlendirmeyi hedefler. Bu film sonucunda sinirlendiğinizde etki kriterine vereceğiniz puan size bağlıdır: Beni çok sinirlendiği için düşük vereceğim de diyebilirsiniz; çok sinirlendim demek ki film hedefine ulaştı bu sebeple yüksek vereceğim de diyebilirsiniz. ",
+    wiki13Desc: "Filmin üzerinizde bıraktığı etki.",
     wiki14Title: "Kalıcılık",
-    wiki14Desc: "İzlediğiniz filmin aklınızda veya duygularınızda ne kadar kalıcı olacağını düşünüyorsunuz? Bu, eskiden izlediğiniz filmleri puanlarken oldukça işlevsel bir skor türüdür."
+    wiki14Desc: "İzlediğiniz filmin aklınızda veya duygularınızda ne kadar kalıcı olacağını düşünüyorsunuz?"
   },
   en: {
     appTitle: "GAS Film Ranker",
@@ -389,7 +705,6 @@ const DICT = {
     labelResult: "result",
     saveBtn: "+ add to list",
     titleSaved: "saved films",
-    exportBtn: "download CSV",
     emptyState: "No films saved yet.",
     warningText: "This tool is entirely subjective. The items here are not strict rules, but suggestions and definitions to guide personal evaluations.",
     delBtn: "Delete",
@@ -400,33 +715,33 @@ const DICT = {
     
     titleWiki: "Wiki",
     wiki1Title: "Cinematography",
-    wiki1Desc: "The art of making choices regarding lighting, camera angles, and composition when recording a film. It is the discipline of telling a story visually. It deals with how elements are placed on the screen and conveyed to the audience.",
+    wiki1Desc: "The art of making choices regarding lighting, camera angles, and composition when recording a film.",
     wiki2Title: "Scenario",
-    wiki2Desc: "The written text showing the flow of scenes, dialogues, and events. In this context, it refers to how the plot and dialogues are conveyed to us, independent of the film's visuals and sound.",
+    wiki2Desc: "The written text showing the flow of scenes, dialogues, and events.",
     wiki3Title: "Acting",
-    wiki3Desc: "The performance displayed by the actors in the film. It measures whether they successfully convey emotions to the audience.",
+    wiki3Desc: "The performance displayed by the actors in the film.",
     wiki4Title: "Technical Execution",
     wiki4Desc: "Refers to how well the equipment, practical, and visual effects are created and utilized in the film.",
     wiki5Title: "Pacing",
-    wiki5Desc: "Deals with how engaging the film is. When watching a well-paced film, you lose track of time and cannot take your eyes off the screen.",
+    wiki5Desc: "Deals with how engaging the film is.",
     wiki6Title: "Sound & Score",
-    wiki6Desc: "The sound and music design of the film. Does the music enhance the emotion, or does it feel redundant? Are the sound designs realistic, or do they mismatch the visuals?",
+    wiki6Desc: "The sound and music design of the film.",
     wiki7Title: "Editing",
-    wiki7Desc: "The construction of the film's rhythm by combining recorded scenes and sounds. The fluidity of transitions, management of time perception, and the psychological tempo are measured by the success of the editing.",
+    wiki7Desc: "The construction of the film's rhythm by combining recorded scenes and sounds.",
     wiki8Title: "Production Design",
-    wiki8Desc: "The organic and believable visualization of the universe the film takes place in. Valued for its functionality in serving the story and reflecting the inner worlds of the characters, rather than just for show.",
+    wiki8Desc: "The organic and believable visualization of the universe the film takes place in.",
     wiki9Title: "Directing",
-    wiki9Desc: "The orchestration of all technical and narrative elements under a single cohesive vision. Shows how well the director can transfer the atmosphere of the created world and their artistic signature regarding the message to the film.",
+    wiki9Desc: "The orchestration of all technical and narrative elements under a single cohesive vision.",
     wiki10Title: "Subtext",
-    wiki10Desc: "Psychological, phylosophical or sociological messages that were given through lines, stories, scenes or sounds etc. The meaning that underlies the film's actual context.",
+    wiki10Desc: "Psychological, philosophical or sociological messages underlying the film's actual context.",
     wiki11Title: "Authenticity",
-    wiki11Desc: "This is about the film being superficial or deep, performative or genuine, original or stolen etc. However, adaptations does not have to be undistinctive; crew can make critical decisions about storytelling etc.",
+    wiki11Desc: "About the film being superficial or deep, performative or genuine, original or stolen.",
     wiki12Title: "Character Design",
-    wiki12Desc: "Are the motivations, traumas and developments of characters psychologically or logically consistent? Reactions of characters should feel natural and organic and not plot-forced. A character can be shallow or deep.",
+    wiki12Desc: "Are the motivations, traumas and developments of characters psychologically or logically consistent?",
     wiki13Title: "Impact",
-    wiki13Desc: "The feeling the movie leaves on you while watching or after you watched it. This is the hardest part to evaluate, I believe. Let’s say, there is a movie that tries to make you angry. If you feel this rage, how would you rate this criterion? Would you score it low because it made you angry or score it high because it reached its target? ",
+    wiki13Desc: "The feeling the movie leaves on you while watching or after you watched it.",
     wiki14Title: "Permanence",
-    wiki14Desc: "For how long do you think you will remember or feel this movie? This criterion is highly effective when you evaluate a movie that you watched a while ago."
+    wiki14Desc: "For how long do you think you will remember or feel this movie?"
   }
 };
 
@@ -483,24 +798,20 @@ function updateInterfaceLanguage() {
   const dict = DICT[currentLang];
   document.documentElement.lang = currentLang;
   
-  // Main UI Texts
   document.getElementById('appTitle').textContent = dict.appTitle;
-  document.getElementById('filmTitle').placeholder = dict.placeholder;
+  document.getElementById('movieSearchInput').placeholder = dict.placeholder;
   document.getElementById('titleZanaat').textContent = dict.titleZanaat;
   document.getElementById('titleDerinlik').textContent = dict.titleDerinlik;
   document.getElementById('titleKisisel').textContent = dict.titleKisisel;
   document.getElementById('labelResult').textContent = dict.labelResult;
   document.getElementById('saveBtn').textContent = dict.saveBtn;
   document.getElementById('titleSaved').textContent = dict.titleSaved;
-  document.getElementById('exportBtn').textContent = dict.exportBtn;
   document.getElementById('warningBox').textContent = dict.warningText;
   
-  // References
   document.getElementById('titleReferences').textContent = dict.titleReferences;
   document.getElementById('ex1Title').textContent = dict.ex1Title;
   document.getElementById('ex1Desc').textContent = dict.ex1Desc;
   
-  // Wiki Texts
   document.getElementById('titleWiki').textContent = dict.titleWiki;
   document.getElementById('wiki1Title').textContent = dict.wiki1Title;
   document.getElementById('wiki1Desc').textContent = dict.wiki1Desc;
@@ -605,9 +916,12 @@ function renderSaved() {
     const dName = DICT[currentLang].titleDerinlik;
     const kName = DICT[currentLang].titleKisisel;
 
-    row.innerHTML = `<div>
+    let reviewHtml = item.review ? `<p class="meta" style="margin-top: 4px; font-style: italic; color: var(--text);">"${item.review}"</p>` : '';
+
+    row.innerHTML = `<div style="flex: 1; padding-right: 10px;">
         <p class="title">${item.title}</p>
         <p class="meta">${zName} ${item.z.toFixed(1)} · ${dName} ${item.d.toFixed(1)} · ${kName} ${item.k.toFixed(1)} · ${dateStr}</p>
+        ${reviewHtml}
       </div>
       <div style="display:flex; align-items:center; gap:10px;">
         <span class="score">${item.final.toFixed(1)}</span>
@@ -625,39 +939,93 @@ function renderSaved() {
 }
 
 document.getElementById('saveBtn').addEventListener('click', () => {
-  const title = document.getElementById('filmTitle').value.trim();
-  if (!title) { document.getElementById('filmTitle').focus(); return; }
+  const title = document.getElementById('movieSearchInput').value.trim();
+  if (!title) { document.getElementById('movieSearchInput').focus(); return; }
+  const review = document.getElementById('filmReviewInput').value.trim();
   const { final, z, d, k } = computeFinal();
-  const item = { id: Date.now().toString(), title, final, z, d, k, date: new Date().toISOString() };
+  const item = { id: Date.now().toString(), title, review, final, z, d, k, date: new Date().toISOString() };
   const list = getSaved();
   list.push(item);
   setSaved(list);
-  document.getElementById('filmTitle').value = '';
+  document.getElementById('movieSearchInput').value = '';
+  document.getElementById('filmReviewInput').value = '';
   renderSaved();
 });
 
-document.getElementById('exportBtn').addEventListener('click', () => {
-  const items = getSaved().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  const header = 'Film,Score,Artisanship,Depth,Personal Impact,Date';
-  const rows = items.map(i => {
-    const dateStr = i.date ? new Date(i.date).toLocaleDateString(currentLang === 'tr' ? 'tr-TR' : 'en-US') : '';
-    const safeTitle = '"' + i.title.replace(/"/g, '""') + '"';
-    return [safeTitle, i.final.toFixed(1), i.z.toFixed(1), i.d.toFixed(1), i.k.toFixed(1), dateStr].join(',');
-  });
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'film-ratings.csv';
-  a.click();
-  URL.revokeObjectURL(url);
+document.getElementById('downloadCardBtn').addEventListener('click', async function() {
+  const btn = this;
+  const originalText = btn.textContent;
+  
+  btn.textContent = "hazırlanıyor..."; 
+  btn.disabled = true;
+
+  try {
+    // 1. Bilgileri doldur
+    document.getElementById('ecTitle').textContent = activeMovie.title || searchInput.value || "Film Adı";
+    document.getElementById('ecYear').textContent = activeMovie.year || "";
+    document.getElementById('ecDirector').textContent = activeMovie.director || "";
+    
+    const { final } = computeFinal();
+    document.getElementById('ecScore').textContent = final.toFixed(1) + "/5";
+    renderStars(document.getElementById('ecStars'), final);
+
+    const reviewText = document.getElementById('filmReviewInput').value.trim();
+    document.getElementById('ecReview').textContent = reviewText ? `"${reviewText}"` : "";
+
+    // 2. Afişi güvenli yoldan (Base64) karta yükle
+    const posterEl = document.getElementById('ecPoster');
+    const imageUrl = activeMovie.poster;
+
+    if (imageUrl && imageUrl.startsWith('http')) {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const base64data = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+        posterEl.src = base64data;
+      } catch (e) {
+        posterEl.src = "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
+      }
+    } else {
+      posterEl.src = "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 400));
+
+    const card = document.getElementById('exportCard');
+    
+    // file:/// protokolü hatasını aşmak için özel ayarlar
+    const canvas = await html2canvas(card, {
+      scale: 2,
+      useCORS: false, // Yerel dosyalar (file://) için false olmalı
+      allowTaint: true, // Güvenlik duvarını esnetir
+      backgroundColor: "#ffffff"
+    });
+
+    const link = document.createElement('a');
+    link.download = `${activeMovie.title || 'film'}-inceleme.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    
+    btn.textContent = originalText;
+    btn.disabled = false;
+
+  }catch (err) {
+    console.error("CANVAS HATASI:", err);
+    btn.textContent = "Hata oluştu!";
+    setTimeout(() => { 
+      btn.textContent = originalText; 
+      btn.disabled = false; 
+    }, 2500);
+  }
 });
 
 initSliders();
 updateInterfaceLanguage();
 updateAll();
-
 </script>
 </body>
 </html>
