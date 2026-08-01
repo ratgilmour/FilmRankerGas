@@ -236,127 +236,140 @@
   /* EXPORT CARD STYLES */
   .export-card {
     position: absolute;
-    left: -9999px;
-    top: -9999px;
-    width: 800px;
-    background: #ffffff;
+    left: 0px;
+    top: 0px;
+    width: 1000px;
+    height: 560px;
+    background: #222222;
     display: flex;
-    flex-direction: column;
     font-family: 'Inter', sans-serif;
+    z-index: -999;
+    opacity: 0.01;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: 1px solid #222;
   }
 
-  .ec-header {
-    background: #1c1c1a;
-    height: 250px;
-    display: flex;
-    align-items: center;
-    padding: 0 50px;
+  .ec-poster-container {
+    width: 380px;
+    height: 100%;
+    flex-shrink: 0;
+    background: #000;
   }
 
-  .ec-logo-area {
-    display: flex;
-    align-items: center;
-    gap: 20px;  
-  }
-
-  #ecLogo {
-    width: 150px;
-    height: 150px;
-    object-fit: contain;
-  }
-  
-  .ec-brand {
-    color: #ffffff;
-    font-size: 48px;
-    font-weight: 400;
-  }
-  
-  .ec-body {
-    flex: 1;
-    display: flex;
-    padding: 50px;
-    gap: 40px;
-  }
-  
   .ec-poster {
-    width: 320px;
-    height: 480px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
-  
+
   .ec-content {
     flex: 1;
+    padding: 45px 50px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    color: #f1efe8;
   }
-  
+
+.ec-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+
+  .ec-logo {
+    height: 35px;
+    object-fit: contain;
+  }
+
+  .ec-brand {
+    font-size: 18px;
+    font-weight: 500;
+    color: #888780;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
   .ec-title-row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
-  
+
   #ecTitle {
-    font-family: 'Inter', sans-serif;
-    font-size: 38px;
-    font-weight: 700;
-    color: #0c3b5e;
-    margin: 0;
-    text-align: right;
-  }
-  
-  #ecYear {
-    font-size: 24px;
+    font-family: 'Lora', serif;
+    font-size: 44px;
     font-weight: 600;
-    color: #0c3b5e;
-    margin-top: 5px;
+    margin: 0;
+    line-height: 1.1;
+    color: #ffffff;
   }
-  
+
+  #ecYear {
+    font-size: 22px;
+    font-weight: 400;
+    color: #b4b2a9;
+    margin-top: 8px;
+    display: block;
+  }
+
+  #ecDirector {
+    font-size: 18px;
+    color: #85b7eb; /* Vurgu rengi */
+    margin: 15px 0 20px 0;
+    font-weight: 500;
+  }
+
   .ec-divider {
     height: 1px;
-    background: #b0b0b0;
-    margin: 15px 0;
+    background: #333333;
+    margin: 20px 0;
     width: 100%;
   }
-  
-  #ecDirector {
-    font-family: 'Lora', serif;
-    font-size: 32px;
-    font-weight: 400;
-    color: #0c3b5e;
+
+  .ec-score-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .ec-stars { display: flex; gap: 4px; }
+  .ec-stars .star { width: 32px; height: 32px; }
+  .ec-stars .star svg { width: 32px; height: 32px; }
+  .ec-stars .star .empty path { fill: #333333; }
+  .ec-stars .star .fill path { fill: #85b7eb; }
+
+  #ecScore {
+    font-size: 30px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .ec-review-box {
+    background: #1a1a1a;
+    border-left: 4px solid #85b7eb;
+    padding: 18px 20px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 5px;
+  }
+
+  #ecReview {
+    font-size: 17px;
+    line-height: 1.5;
+    color: #d1d0c9;
+    font-style: italic;
     margin: 0;
   }
   
-  .ec-score-row {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 20px;
+  .ec-footer {
+    margin-top: auto;
+    font-size: 13px;
+    color: #444444;
+    text-align: right;
   }
-  
-  .ec-stars {
-    display: flex;
-    gap: 4px;
-  }
-  .ec-stars svg { width: 30px; height: 30px; }
-  .ec-stars path { fill: #222222; }
-  
-  .ec-score-text {
-    font-size: 28px;
-    font-weight: 500;
-    color: #0c3b5e;
-  }
-  
-  #ecReview {
-    font-size: 16px;
-    line-height: 1.6;
-    color: #4a4a4a;
-    margin-top: 10px;
-    text-align: justify;
-  }
+
+
 </style>
 </head>
 <body>
@@ -527,28 +540,37 @@
 
 <!-- GİZLİ EXPORT KARTI -->
 <div id="exportCard" class="export-card">
-  <div class="ec-header">
-    <div class="ec-logo-area">
-      <img src="logoGas1.png" alt="gas" id="ecLogo"> 
+  <div class="ec-poster-container">
+    <img src="" id="ecPoster" class="ec-poster" crossorigin="anonymous">
+  </div>
+  
+  <div class="ec-content">
+    <div class="ec-header">
+      <img src="logoGas1.png" alt="gas" class="ec-logo">
       <span class="ec-brand">FilmRanker</span>
     </div>
-  </div>
-  <div class="ec-body">
-    <img src="" id="ecPoster" class="ec-poster" crossorigin="anonymous">
-    <div class="ec-content">
-      <div class="ec-title-row">
-        <h2 id="ecTitle">Movie Title Here</h2>
-        <span id="ecYear">Year</span>
-      </div>
-      <div class="ec-divider"></div>
-      <h3 id="ecDirector">Director Name</h3>
-      <div class="ec-divider"></div>
-      <div class="ec-score-row">
-        <div id="ecStars" class="ec-stars"></div>
-        <span id="ecScore" class="ec-score-text">4.0/5</span>
-      </div>
-      <div class="ec-divider"></div>
-      <p id="ecReview">Review text goes here...</p>
+    
+    <div class="ec-title-row">
+      <h2 id="ecTitle">Movie Title</h2>
+      <span id="ecYear">2026</span>
+    </div>
+    
+    <div id="ecDirector">Director Name</div>
+    
+    <div class="ec-divider"></div>
+    
+    <div class="ec-score-row">
+      <div id="ecStars" class="ec-stars"></div>
+      <span id="ecScore">4.0/5</span>
+    </div>
+    
+    <!-- İnceleme metni -->
+    <div class="ec-review-box" id="ecReviewBox">
+      <p id="ecReview"></p>
+    </div>
+
+    <div class="ec-footer">
+      Gün Alperen Saka &middot; Made with AI
     </div>
   </div>
 </div>
@@ -661,7 +683,7 @@ const DICT = {
     emptyState: "Henüz film kaydedilmedi.",
     warningText: "Hazırlanan bu araç tamamen subjektiftir. Buradaki maddeler ve örnekler katı kurallar değil, kişisel değerlendirmeleri yönlendiren öneriler ve tanımlardır.",
     delBtn: "Sil",
-    
+
     titleReferences: "Referanslar",
     ex1Title: "Ran (乱) - Akira Kurosawa (1985)",
     ex1Desc: "Mevzubahis kriteri puanlamak adına kullanılabilecek muazzam bir sinematografi örneği.",
@@ -708,7 +730,7 @@ const DICT = {
     emptyState: "No films saved yet.",
     warningText: "This tool is entirely subjective. The items here are not strict rules, but suggestions and definitions to guide personal evaluations.",
     delBtn: "Delete",
-    
+
     titleReferences: "References",
     ex1Title: "Ran (乱) - Akira Kurosawa (1985)",
     ex1Desc: "An incredible example of cinematography that can be used as a reference to score the mentioned criteria.",
@@ -970,7 +992,15 @@ document.getElementById('downloadCardBtn').addEventListener('click', async funct
     renderStars(document.getElementById('ecStars'), final);
 
     const reviewText = document.getElementById('filmReviewInput').value.trim();
-    document.getElementById('ecReview').textContent = reviewText ? `"${reviewText}"` : "";
+    const reviewBox = document.getElementById('ecReviewBox');
+    
+    if (reviewText) {
+      document.getElementById('ecReview').textContent = `"${reviewText}"`;
+      reviewBox.style.display = 'block'; 
+    } else {
+      document.getElementById('ecReview').textContent = "";
+      reviewBox.style.display = 'none'; 
+    }
 
     // 2. Afişi güvenli yoldan (Base64) karta yükle
     const posterEl = document.getElementById('ecPoster');
