@@ -434,10 +434,10 @@
         <div class="stars" id="starRow"></div>
       </div>
 
-      <!-- BUTONLAR BURAYA HİZALANDI -->
+      
       <div style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
         <button id="saveBtn" style="flex: 1;">+ listeye ekle</button>
-        <button id="downloadCardBtn" style="flex: 1; background: #0c3b5e; color: #fff; border: none;">Kartı İndir</button>
+        <button id="downloadCardBtn" style="flex: 1; background: #5557c2; color: #fff; border: none;">Kartı İndir</button>
       </div>
 
       <div class="toolbar">
@@ -683,6 +683,8 @@ const DICT = {
     emptyState: "Henüz film kaydedilmedi.",
     warningText: "Hazırlanan bu araç tamamen subjektiftir. Buradaki maddeler ve örnekler katı kurallar değil, kişisel değerlendirmeleri yönlendiren öneriler ve tanımlardır.",
     delBtn: "Sil",
+    reviewPlaceholder: "Kişisel notlar...",
+    downloadCardBtn: "Kartı indir",
 
     titleReferences: "Referanslar",
     ex1Title: "Ran (乱) - Akira Kurosawa (1985)",
@@ -730,6 +732,8 @@ const DICT = {
     emptyState: "No films saved yet.",
     warningText: "This tool is entirely subjective. The items here are not strict rules, but suggestions and definitions to guide personal evaluations.",
     delBtn: "Delete",
+    reviewPlaceholder: "Personal notes...",
+    downloadCardBtn: "Download Card",
 
     titleReferences: "References",
     ex1Title: "Ran (乱) - Akira Kurosawa (1985)",
@@ -829,6 +833,8 @@ function updateInterfaceLanguage() {
   document.getElementById('saveBtn').textContent = dict.saveBtn;
   document.getElementById('titleSaved').textContent = dict.titleSaved;
   document.getElementById('warningBox').textContent = dict.warningText;
+  document.getElementById('filmReviewInput').placeholder = dict.reviewPlaceholder;
+  document.getElementById('downloadCardBtn').textContent = dict.downloadCardBtn;
   
   document.getElementById('titleReferences').textContent = dict.titleReferences;
   document.getElementById('ex1Title').textContent = dict.ex1Title;
