@@ -53,7 +53,7 @@ Kişisel deneyim ve hisler her zaman ön planda olduğu için, nihai puan hesapl
 ## Project Updates & Features (GAS Film Ranker)
 
    1. Permanent Dark Theme Lock: Removed light/dark media queries and locked the interface into a fixed, premium dark theme matching the exact background color of the logo (#222222).
-   2. Custom Brand Logo Integration: Replaced the standard text-based header (<h1>) in the top left corner with the project's official brand logo (logoGas1.png).
+   2. Custom Brand Logo Integration: Replaced the standard text-based header in the top left corner with the project's official brand logo.
    3. TMDB API Live Search & Metadata Integration: Integrated a live movie search dropdown connected to The Movie Database (TMDB) API, dynamically fetching film titles, release years, director names, and high-resolution posters into the active session memory.
    4. Letterboxd-Style Export Card Feature:
 
@@ -66,7 +66,7 @@ Kişisel deneyim ve hisler her zaman ön planda olduğu için, nihai puan hesapl
     
    1. Karanlık Tema Kilidi: Aydınlık/karanlık mod sorguları kaldırılarak, logonun arka plan rengiyle (#222222) kusursuz uyum sağlayan sabit ve premium bir karanlık tema altyapısına geçildi.
 
-   2. Özel Marka Logosu Entegrasyonu: Sol üst köşedeki standart metin tabanlı başlık (<h1>) gizlenerek, yerine projenin orijinal marka logosu (logoGas1.png) yerleştirildi.    
+   2. Özel Marka Logosu Entegrasyonu: Sol üst köşedeki standart metin tabanlı başlık gizlenerek, yerine projenin orijinal marka logosu (logoGas1.png) yerleştirildi.    
 
    3. TMDB API Canlı Arama ve Afiş Desteği: Film arama çubuğuna entegre edilen canlı arama sistemi ile veriler The Movie Database (TMDB) üzerinden çekilir hale getirildi; ayrıca her filmin yönetmen bilgisi ve yüksek çözünürlüklü afiş URL'si dinamik olarak hafızaya alınmaya başlandı.
 
