@@ -1074,8 +1074,11 @@ document.getElementById('exportExcelBtn').addEventListener('click', () => {
   }
   
   // Table data
+// Tablo verilerini hazırlıyoruz
   const dataToExport = items.map(item => ({
     [currentLang === 'tr' ? 'Film Adı' : 'Film Title']: item.title,
+    [currentLang === 'tr' ? 'Yıl' : 'Year']: item.year || "",          // <--- Yeni Eklenen Yıl
+    [currentLang === 'tr' ? 'Yönetmen' : 'Director']: item.director || "", // <--- Yeni Eklenen Yönetmen
     [currentLang === 'tr' ? 'Toplam Puan' : 'Final Score']: item.final,
     [currentLang === 'tr' ? 'Zanaat' : 'Artisanship']: Number(item.z.toFixed(2)),
     [currentLang === 'tr' ? 'Derinlik' : 'Depth']: Number(item.d.toFixed(2)),
