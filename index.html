@@ -236,18 +236,16 @@
   /* EXPORT CARD STYLES */
   .export-card {
     position: absolute;
-    left: -9999px;
-    top: 0px;
+    left: 0;
+    top: 0;
     width: 1000px;
     height: 560px;
     background: #222222;
     display: flex;
     font-family: 'Inter', sans-serif;
-    z-index: -999;
-    opacity: 1;
+    z-index: -9999; 
     pointer-events: none;
     box-sizing: border-box;
-    border: 1px solid #222;
   }
 
   .ec-poster-container {
@@ -1039,6 +1037,7 @@ document.getElementById('downloadCardBtn').addEventListener('click', async funct
       useCORS: false, // Yerel dosyalar (file://) için false olmalı
       allowTaint: true, // Güvenlik duvarını esnetir
       backgroundColor: "#222222"
+      scrollY: -window.scrollY
     });
 
     const link = document.createElement('a');
