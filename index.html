@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GAS Film Ranker</title>
@@ -437,6 +438,7 @@
       <div style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
         <button id="saveBtn" style="flex: 1;">+ listeye ekle</button>
         <button id="downloadCardBtn" style="flex: 1; background: #5557c2; color: #fff; border: none;">Kartı İndir</button>
+        <button id="exportExcelBtn" style="flex: 1; background: #107c41; color: #fff; border: none; font-size: 13px;">Excel'e Aktar</button>
       </div>
 
       <div class="toolbar">
@@ -684,6 +686,7 @@ const DICT = {
     delBtn: "Sil",
     reviewPlaceholder: "Kişisel notlar...",
     downloadCardBtn: "Kartı indir",
+    exportExcelBtn: "Excel'e Aktar",
 
     titleReferences: "Referanslar",
     ex1Title: "Ran (乱) - Akira Kurosawa (1985)",
@@ -733,6 +736,7 @@ const DICT = {
     delBtn: "Delete",
     reviewPlaceholder: "Personal notes...",
     downloadCardBtn: "Download Card",
+    exportExcelBtn: "Export to Excel",
 
     titleReferences: "References",
     ex1Title: "Ran (乱) - Akira Kurosawa (1985)",
@@ -834,6 +838,7 @@ function updateInterfaceLanguage() {
   document.getElementById('warningBox').textContent = dict.warningText;
   document.getElementById('filmReviewInput').placeholder = dict.reviewPlaceholder;
   document.getElementById('downloadCardBtn').textContent = dict.downloadCardBtn;
+  document.getElementById('exportExcelBtn').textContent = dict.exportExcelBtn;
   
   document.getElementById('titleReferences').textContent = dict.titleReferences;
   document.getElementById('ex1Title').textContent = dict.ex1Title;
@@ -1059,6 +1064,33 @@ document.getElementById('downloadCardBtn').addEventListener('click', async funct
   } finally {
     card.classList.remove('is-rendering');
   }
+});
+
+document.getElementById('exportExcelBtn').addEventListener('click', () => {
+  const items = getSaved();
+  if (items.length === 0) {
+    alert(currentLang === 'tr' ? 'Aktarılacak kayıtlı film bulunamadı!' : 'No saved films found to export!');
+    return;
+  }
+  
+  // Table data
+  const dataToExport = items.map(item => ({
+    [currentLang === 'tr' ? 'Film Adı' : 'Film Title']: item.title,
+    [currentLang === 'tr' ? 'Toplam Puan' : 'Final Score']: item.final,
+    [currentLang === 'tr' ? 'Zanaat' : 'Artisanship']: Number(item.z.toFixed(2)),
+    [currentLang === 'tr' ? 'Derinlik' : 'Depth']: Number(item.d.toFixed(2)),
+    [currentLang === 'tr' ? 'Kişisel Etki' : 'Personal Impact']: Number(item.k.toFixed(2)),
+    [currentLang === 'tr' ? 'Kişisel Not' : 'Personal Review']: item.review || "",
+    [currentLang === 'tr' ? 'Kayıt Tarihi' : 'Date']: item.date ? new Date(item.date).toLocaleDateString() : ""
+  }));
+
+  // Excel
+  const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Film Archive");
+  
+  // Dosyayı İndir
+  XLSX.writeFile(workbook, "gas-film-ranker-archive.xlsx");
 });
 
 initSliders();
