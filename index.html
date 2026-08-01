@@ -241,12 +241,13 @@
     width: 1000px;
     height: 560px;
     background: #111111;
-    display: flex;
+    display: none;
     font-family: 'Inter', sans-serif;
     opacity: 1; 
     pointer-events: none;
     box-sizing: border-box;
   }
+  .export-card.is-rendering { display: flex; }
 
   .ec-poster-container {
     width: 380px;
@@ -984,6 +985,8 @@ document.getElementById('downloadCardBtn').addEventListener('click', async funct
   
   btn.textContent = "hazırlanıyor..."; 
   btn.disabled = true;
+  const card = document.getElementById('exportCard');
+  card.classList.add('is-rendering');
 
   try {
     // 1. Bilgileri doldur
@@ -1029,14 +1032,12 @@ document.getElementById('downloadCardBtn').addEventListener('click', async funct
 
     await new Promise(resolve => setTimeout(resolve, 400));
 
-    const card = document.getElementById('exportCard');
-    
     // file:/// protokolü hatasını aşmak için özel ayarlar
     const canvas = await html2canvas(card, {
       scale: 2,
       useCORS: false, // Yerel dosyalar (file://) için false olmalı
       allowTaint: true, // Güvenlik duvarını esnetir
-      backgroundColor: "#222222"
+      backgroundColor: "#222222",
       scrollY: -window.scrollY
     });
 
@@ -1055,6 +1056,8 @@ document.getElementById('downloadCardBtn').addEventListener('click', async funct
       btn.textContent = originalText; 
       btn.disabled = false; 
     }, 2500);
+  } finally {
+    card.classList.remove('is-rendering');
   }
 });
 
